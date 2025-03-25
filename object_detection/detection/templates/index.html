@@ -1,0 +1,112 @@
+
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khoanh Vật Tương Ứng</title>
+    <style>
+        #container {
+            display: flex;
+        }
+        #left_image {
+            width: 50%;
+            height: 500px;
+            position: relative;
+        }
+        #right_image {
+            width: 50%;
+            height: 500px;
+            cursor: pointer;
+        }
+        .bounding-box {
+            position: absolute;
+            border: 2px solid red;
+        }
+        #loading-spinner {
+        display: none;  /* Ẩn spinner ban đầu */
+        position: fixed;  /* Đảm bảo nó luôn ở trên cùng */
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);  /* Đặt spinner vào giữa màn hình */
+        border: 16px solid #f3f3f3;  /* Màu nền của spinner */
+        border-top: 16px solid #3498db;  /* Màu phần quay */
+        border-radius: 50%;  /* Làm spinner thành hình tròn */
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        z-index: 9999;  /* Đảm bảo spinner ở trên tất cả các phần tử khác */
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    </style>
+</head>
+<body>
+    <h1>Khoanh Vật Tương Ứng</h1>
+    <div id="loading-spinner"></div>
+    <div id="container">
+        <div id="right_image">
+            <img id="ice" class="template_image" src="./static/image/tem_image/ice.jpg" width="10%" >
+            <img id="balloon" class="template_image" src="./static/image/tem_image/balloon.jpg" width="10%" >
+            <img id="bear" class="template_image" src="./static/image/tem_image/bear.jpg" width="10%" >
+            <img id = "boat" class="template_image" src="./static/image/tem_image/boat.jpg" width="10%" >
+            <img id = "cake" class="template_image" src="./static/image/tem_image/cake.jpg" width="10%" >
+            <img id = "car" class="template_image" src="./static/image/tem_image/car.jpg" width="10%" >
+            <img id = "cat" class="template_image" src="./static/image/tem_image/cat.jpg" width="10%" >
+            <img id= "duck" class="template_image" src="./static/image/tem_image/duck.jpg" width="10%" >
+            <img id = "grape" class="template_image" src="./static/image/tem_image/grape.jpg" width="10%" >
+            <img id = "horse" class="template_image" src="./static/image/tem_image/horse.jpg" width="10%" >
+            <img id = "strawberry" class="template_image" src="./static/image/tem_image/strawberry.jpg" width="10%" >
+            <img id= "tie" class="template_image" src="./static/image/tem_image/tie.jpg" width="10%" >
+            <img id= "train" class="template_image" src="./static/image/tem_image/train.jpg" width="10%" >
+            <img id= "watermelon" class="template_image" src="./static/image/tem_image/watermelon.jpg" width="10%" >
+            <img id= "tenis" class="template_image" src="./static/image/tem_image/tenis.jpg" width="10%" >
+        </div>
+        <div id="left_image">
+            <img id="image_right" src="{% static 'image/right_image.jpg' %}" width="70%">
+        </div>
+    </div>
+
+    <script>
+       document.getElementById("right_image").addEventListener("click", function(event) {
+                    if (event.target && event.target.tagName === 'IMG') {
+                        // Lấy đường dẫn ảnh đã click
+                        const clickedImageId = event.target.id;
+                        console.log("Bạn đã click vào ảnh: ", clickedImageId);
+
+                        // Thực hiện hành động khác với ảnh đã click
+                    
+                
+                        var url = `http://127.0.0.1:8000/process_click/?template=${clickedImageId}`;
+                        document.getElementById('loading-spinner').style.display = 'block';
+                        // Gửi yêu cầu GET đến server với các tham số trong URL
+                        fetch(url, {
+                            method: 'GET',  // Phương thức GET không có body
+                            headers: {
+                                'Content-Type': 'application/json',  // Không cần thiết với GET, chỉ cần để giữ tính hợp lệ
+                            }
+                        }) 
+                        .then(response => response.json())
+                        .then(data => {
+                            // var img = new Image();
+                            var img = new Image();
+                            img.src = 'data:image/jpeg;base64,' + data.image;
+                            img.onload = function() {
+                                // Ẩn Spinner khi ảnh đã được tải xong
+                                document.getElementById('loading-spinner').style.display = 'none';
+                            };
+                        document.getElementById("image_right") // Xóa ảnh cũ
+                        document.getElementById("image_right").src = img.src;
+                        })
+
+                        .catch(error => {
+                            console.error('Error:', error);  // Xử lý lỗi nếu có
+                        });
+                }
+                });
+    </script>
+</body>
+</html>
